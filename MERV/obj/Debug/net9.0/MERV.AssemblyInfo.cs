@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MERV")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c34ef8e61e95f2553f6d88b2c4ed7b1b96b703af")]
 [assembly: System.Reflection.AssemblyProductAttribute("MERV")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MERV")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

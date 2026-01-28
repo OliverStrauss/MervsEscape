@@ -17,12 +17,14 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Texture2D _pixel;
+    SpriteFont uiFont;
 
-    /**
+    
     private Texture2D mervTexture;
     private Texture2D backgroundTexture;
     private Texture2D floorTexture;
-    **/
+    Texture2D zapperTexture;
+
     //FONT
   //  SpriteFont font;
     SegmentManager map;
@@ -31,7 +33,7 @@ public class Game1 : Game
     public static int screenHeight = 540;
 
     //CHARACTER DIMS
-    private int mervSize = 32;
+    private int mervSize = 64;
 
     Rectangle merv;
 
@@ -41,10 +43,12 @@ public class Game1 : Game
     float jetpackPower = 2500f; // Force pushing up
     float gravity = 1000f;
 
+    List<UIObject> uiObjects = new();
+    private Dictionary<string, Texture2D> obstacleTextures;
 
 
     //VARS set for scope
-   // int score;
+  
     private Vector2 mervPosition;
     private float _velocityY = 0f;
     private Random _rng = new Random();
@@ -54,6 +58,10 @@ public class Game1 : Game
 
     float pipeSpawnTimer = 0f;
     float pipeSpawnInterval = 2f;
+
+    public static float DISTANCE =0 ;
+
+
 
 
 
@@ -74,8 +82,9 @@ public class Game1 : Game
         screenHeight = GraphicsDevice.Viewport.Height;
 
         mervPosition = new Vector2(screenWidth / 3, screenHeight / 2);
-        Random _rng = new Random();
-        map = new SegmentManager(_rng,10);
+        _rng = new Random();
+        //map = new SegmentManager(_rng);
+       
        
 
 
@@ -88,175 +97,117 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-       
 
-   
+        uiFont = Content.Load<SpriteFont>("UIFont");
+        uiObjects.Add(new ScoreUI(new Vector2(20, 20), uiFont));
+
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
-        _pixel.SetData(
-            new[] { Color.White }
-        );
+        _pixel.SetData(new[] { Color.White });
 
+        mervTexture = Content.Load<Texture2D>("Merv");
 
-        // TODO: use this.Content to load your game content here
+        obstacleTextures = new Dictionary<string, Texture2D>();
+        obstacleTextures["zapper_basic"] = Content.Load<Texture2D>("ZapperBasic");
+        obstacleTextures["zapper_tex"] = Content.Load<Texture2D>("LaserText");
+
+        map = new SegmentManager(_rng, obstacleTextures);
     }
 
 
 
 
-    /**
-    void SpawnObstacles()
+    
+    
+
+
+
+    
+    
+
+
+    void resetGame()
     {
+        map = new SegmentManager(_rng, obstacleTextures);
 
-
-        int RandChoice = _rng.Next(0,4);
-
-        
-            int spawnY = _rng.Next(50, screenHeight - 150);
-            int spacing = _rng.Next(20,screenWidth);
-
-            if(RandChoice == 0){
-                obstacles.Add(new Zapper(
-                    new Vector2(screenWidth+spacing,spawnY),
-                    ZapperType.Horizontal,
-                    200)
-                );
-            }
-            else if(RandChoice == 1){
-                obstacles.Add(new Zapper(
-                    new Vector2(screenWidth+spacing,spawnY),
-                    ZapperType.DiagonalRight,
-                    100)
-                );
-            }
-            else if(RandChoice == 2){
-                obstacles.Add(new Zapper(
-                    new Vector2(screenWidth+spacing,spawnY),
-                    ZapperType.DiagonalLeft,
-                    100)
-                );
-            }
-            else{
-                obstacles.Add(new Zapper(
-                    new Vector2(screenWidth+spacing,spawnY),
-                    ZapperType.Vertical,
-                    100)
-                );
-            }
-        
-
-                
-    }
-
-
-
-    void updateObstacles(float dt ){
-
-        for( int i = obstacles.Count -1 ; i>=0; i --  ){
-            obstacles[i].Update(dt,gameSpeed);
-        
-
-            if (obstacles[i].Hitbox.Intersects(merv))
-            {
-                Console.WriteLine("GAME OVER");
-                paused = true;
-                return; 
-                //resetGame();
-            }
-
-            // Remove if off screen
-            if (!obstacles[i].IsActive)
-            {
-                obstacles.RemoveAt(i);
-            }
-            
-      
-        }
-    }
-    **/
-    
-
-    
-
-    void resetGame(){
-       // obstacles = new List<Obstacle>();
         mervPosition = new Vector2(screenWidth / 3, screenHeight / 2);
-       // score = 0; 
-
+        _velocityY = 0f;
+        DISTANCE = 0f;
+        floorX = 0f;
     }
 
 
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
 
-        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        var keyboard = Keyboard.GetState();
-        merv = new Rectangle((int)mervPosition.X, (int)mervPosition.Y, mervSize, mervSize);
+        try{
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
 
-        if (keyboard.IsKeyDown(Keys.Up))
-        {
-           _velocityY -= jetpackPower * dt;
-            //paused = false;
-        }
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var keyboard = Keyboard.GetState();
+            merv = new Rectangle((int)mervPosition.X, (int)mervPosition.Y, mervSize, mervSize);
 
-        /**
-        //Spawn pipes
-        if(!paused){
-            pipeSpawnTimer += dt;
-            if (pipeSpawnTimer >= pipeSpawnInterval)
+            if (keyboard.IsKeyDown(Keys.Up))
             {
-                SpawnObstacles();
-                pipeSpawnTimer = 0f;
-
+            _velocityY -= jetpackPower * dt;
+                paused = false;
             }
-            updateObstacles(dt);
-        **/
-            _velocityY += gravity * dt;
-
-            // Cap the speed so you don't fly infinitely fast
-            _velocityY = Math.Clamp(_velocityY, -600f, 600f);
-
-            mervPosition.Y += _velocityY * dt;
-
-     
-
-            floorX -= gameSpeed * dt;
 
         
-            if (floorX <= -screenWidth)
-            {
-                floorX = 0;
-            }
+
+            if(!paused){
+                _velocityY += gravity * dt;
+
+                _velocityY = Math.Clamp(_velocityY, -600f, 600f);
+
+                mervPosition.Y += _velocityY * dt;
+
+        
+
+                floorX -= gameSpeed * dt;
+                DISTANCE += (float).2;
+
             
-      //  }
-        
-        map.Update(dt, gameSpeed);
+                if (floorX <= -screenWidth)
+                {
+                    floorX = 0;
+                }
+                
 
+            
+                map.Update(dt, gameSpeed);
+                if(map.CheckCollisions(merv)){
+                    Console.WriteLine("HEYYEYEYE HE DIED");
+                    paused = true;
+                    resetGame();
+                }
+            
 
-     
+                //Floor and Ceiling collisions
+                if(mervPosition.Y < 0){
+                    _velocityY =0;
+                    mervPosition.Y=0;
+                
+                }
+                if(mervPosition.Y>screenHeight - mervSize){
+                    _velocityY =0;
+                    mervPosition.Y = screenHeight - mervSize;
+                
+                }
+            }
+            foreach (var ui in uiObjects){
+                ui.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            }
 
-
-
-     
-
-        //Floor and Ceiling collisions
-        if(mervPosition.Y < 0){
-            _velocityY =0;
-            mervPosition.Y=0;
-         
+            base.Update(gameTime);
         }
-        if(mervPosition.Y>screenHeight - mervSize){
-            _velocityY =0;
-            mervPosition.Y = screenHeight - mervSize;
-          
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine("CRASH IN UPDATE: " + e.Message);
+            System.Diagnostics.Debug.WriteLine(e.StackTrace);
+            throw; // Re-throw to pause debugger
         }
-
-
-
-    
-        base.Update(gameTime);
     }
 
    protected override void Draw(GameTime gameTime)
@@ -264,26 +215,25 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.White);
 
 
-        _spriteBatch.Begin();
-
-             //Background
-       // _spriteBatch.Draw(backgroundTexture, new Rectangle(0, 0, screenWidth, screenHeight), Color.White);
-
-        //Draw Character
-       
-
-
-        /**
-        _spriteBatch.DrawString(
-            font,
-            $"{score}",
-            new Vector2(screenWidth/2, 20),
-            Color.White
+        _spriteBatch.Begin(
+            SpriteSortMode.Deferred, 
+            BlendState.AlphaBlend, 
+            SamplerState.LinearWrap, // <--- THIS ALLOWS THE ZAPPER TO TILE
+            null, 
+            null
         );
-        **/
-        map.Draw(_spriteBatch, _pixel);
-        _spriteBatch.Draw(_pixel, merv, Color.Blue);
+ 
+
         
+ 
+        map.Draw(_spriteBatch, _pixel);
+        _spriteBatch.Draw(mervTexture, merv, Color.White);
+       // _spriteBatch.Draw(_pixel, merv, Color.White);
+
+  
+        foreach (var ui in uiObjects){
+            ui.Draw(_spriteBatch);
+        }
 
         _spriteBatch.End();
 

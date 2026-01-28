@@ -300,11 +300,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MERV/MERV.csproj",
+      "projectUniqueName": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MervsEscape/MERV/MERV.csproj",
       "projectName": "MERV",
-      "projectPath": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MERV/MERV.csproj",
+      "projectPath": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MervsEscape/MERV/MERV.csproj",
       "packagesPath": "/Users/oliverstrauss/.nuget/packages/",
-      "outputPath": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MERV/obj/",
+      "outputPath": "/Users/oliverstrauss/Documents/COMPUTER_SCIENCE/classes/JuniorYear/SECOND_SEM/MonoGames/MervJoyride/MervsEscape/MERV/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/oliverstrauss/.nuget/NuGet/NuGet.Config"

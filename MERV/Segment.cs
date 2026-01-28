@@ -44,6 +44,13 @@ public class Segment
         }
    
     }
+    public bool CheckCollisions(Rectangle player ){
+        foreach (var o in Obstacles)
+            if (o.Collides(player))
+                return true;
+
+        return false;
+    }
 
    public void Draw(SpriteBatch spriteBatch, Texture2D pixel)
     {   
@@ -57,5 +64,11 @@ public class Segment
             o.Draw(spriteBatch, pixel);
     }
 
+    public float getStartX(){
+        return StartX;
+    }
+
     public bool IsOffScreen() => EndX < 0;
+
+   
 }

@@ -6,44 +6,100 @@ using System;
 namespace MERV;
 public class SegmentManager
 {
-    private readonly List<Segment> segments = new();
+    public readonly List<Segment> segments = new();
     private readonly Random rng;
     private float nextSpawnX;
+    private Dictionary<string, Texture2D> textures;
 
-    private int segmentsSize;
 
-    public SegmentManager(Random rng,int segSize)
+
+    private int segmentsPlaced = 0; 
+
+    public SegmentManager(Random rng,Dictionary<string, Texture2D> textures)
     {
         this.rng = rng;
         nextSpawnX = 960;
-        segmentsSize = segSize;
+        this.textures = textures;
+       
+    }
+
+    public bool CheckCollisions(Rectangle player)
+    {
+        foreach (var s in segments)
+            if (s.CheckCollisions(player))
+                return true;
+
+        return false;
     }
 
     public void Update(float dt, float speed)
     {
         foreach (var s in segments)
             s.Update(dt, speed);
-        //Checking if newest element in list 
-        if (segments.Count < segmentsSize )
-            SpawnNext();
+        //if(segments[len-1].Endx < screenwidth)
+        while (segments.Count == 0 || segments[^1].EndX < Game1.screenWidth)
+            {
+                SpawnNext();
+            }
 
-        Console.WriteLine(segments.Count);
+    
         segments.RemoveAll(s => s.IsOffScreen());
     }
 
+ 
     void SpawnNext()
     {
-        /**
-        Segment seg = rng.Next(0, 2) switch
-        {
-            0 => SegmentFactory.Easy(nextSpawnX, rng),
-            _ => SegmentFactory.DiagonalRun(nextSpawnX)
-        };
-        **/
         
-        Segment seg = SegmentStorage.Easy(nextSpawnX,rng);
+    
+
+        float spawnX = 0f;
+
+        if (segments.Count == 0)
+        {
+            spawnX = 0f;
+        }
+        else
+        {
+            var last = segments[^1]; // last element
+            spawnX = last.EndX;
+        }
+
+        
+
+        Segment seg; 
+        bool debug = false; 
+        
+      
+
+        //Intro Segment;
+        if(segmentsPlaced == 0){
+            seg = SegmentStorage.Intro(spawnX,rng,textures);
+        }else{
+            
+           int choice = rng.Next(5);
+            if(debug){
+                seg =SegmentStorage.Debug(spawnX,rng,textures);
+                
+            }else{
+            
+
+            if(choice == 0){
+                seg = SegmentStorage.ArrowPattern(spawnX,rng,textures);
+            }
+            else if ( choice == 1){
+                seg = SegmentStorage.VertHeaven(spawnX,rng,textures);
+            }else{
+                seg = SegmentStorage.randomZappers(spawnX,rng,textures);
+            }
+
+            }
+
+            
+        }
+        
         segments.Add(seg);
-        nextSpawnX = seg.EndX;
+        segmentsPlaced ++; 
+   
     }
 
     public void Draw(SpriteBatch sb, Texture2D pixel)
